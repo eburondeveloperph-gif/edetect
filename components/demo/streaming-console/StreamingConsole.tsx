@@ -107,7 +107,7 @@ DO NOT use conversational filler. RETURN ONLY THE TRANSLATED TEXT. DO NOT includ
       const last = turns[turns.length - 1];
       if (last && last.role === 'user' && !last.isFinal) {
         updateLastTurn({
-          text: last.text + text,
+          text,
           isFinal,
         });
       } else {

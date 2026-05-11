@@ -6,10 +6,11 @@
 
 import React, { useEffect, useRef } from 'react';
 import './WelcomeScreen.css';
-import { useLogStore } from '../../../lib/state';
+import { useLogStore, useSettings } from '../../../lib/state';
 
 const WelcomeScreen: React.FC = () => {
   const turns = useLogStore(state => state.turns);
+  const { language2 } = useSettings();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom whenever turns update
@@ -46,7 +47,7 @@ const WelcomeScreen: React.FC = () => {
           >
             <div className="turn-inner">
               <span className="turn-label">
-                {turn.role === 'user' ? 'Input' : 'Translation'}
+                {turn.role === 'user' ? 'Original Transcription' : `Translated Text (${language2})`}
               </span>
               <div className="turn-text-wrapper">
                 <p className="turn-text">
