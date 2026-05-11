@@ -77,7 +77,13 @@ If the input is spoken in another language:
 1. If this language is different from the current secondary language, you MUST call set_detected_language with the name of this new language.
 2. Translate the input to ${language1}.
 
-DO NOT use conversational filler. RETURN ONLY THE TRANSLATED TEXT. DO NOT include the original text or any labels in your response.`
+OUTPUT BOTH the original transcription and the translated text.
+Format your text response exactly like this:
+Original ([Detected Language]): [Original transcribed text]
+Translation: [Translated text]
+
+CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Translation", and DO NOT speak the detected language. ONLY vocalize the final translated words.
+DO NOT use conversational filler.`
               : systemPrompt,
           },
         ],

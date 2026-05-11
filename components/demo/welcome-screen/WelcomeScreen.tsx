@@ -47,7 +47,7 @@ const WelcomeScreen: React.FC = () => {
           >
             <div className="turn-inner">
               <span className="turn-label">
-                {turn.role === 'user' ? 'Original Transcription' : `Translated Text (${language2})`}
+                {turn.role === 'user' ? 'Live Transcription' : `AI Agent`}
               </span>
               <div className="turn-text-wrapper">
                 <p className="turn-text">
