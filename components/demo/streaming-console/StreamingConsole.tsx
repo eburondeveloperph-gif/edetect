@@ -3,7 +3,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import WelcomeScreen from '../welcome-screen/WelcomeScreen';
 // FIX: Import LiveServerContent to correctly type the content handler.
 import { Modality, LiveServerContent } from '@google/genai';
@@ -23,6 +23,8 @@ export default function StreamingConsole() {
 
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const [detectedLangNotification, setDetectedLangNotification] = useState<string | null>(null);
 
   const isAutoDetect = (autoDetectLanguage && !isLanguageLocked) || language2 === 'Auto-Detect';
 
@@ -194,9 +196,16 @@ DO NOT use conversational filler. If you do not understand the input, just say n
           if (call.name === 'set_detected_language') {
             const langInfo = call.args;
             if (langInfo && (langInfo as any).languageName) {
+              const detectedName = (langInfo as any).languageName;
+              
+              setDetectedLangNotification(`Language Detected: ${detectedName}`);
+              setTimeout(() => {
+                setDetectedLangNotification(null);
+              }, 4000);
+
               // Delay setting the language to ensure it happens after transcription is rendered
               setTimeout(() => {
-                useSettings.getState().setLanguage2((langInfo as any).languageName);
+                useSettings.getState().setLanguage2(detectedName);
                 useSettings.getState().setIsLanguageLocked(true);
               }, 500);
               // Do we need to send response back? Yes, otherwise model gets stuck
@@ -232,6 +241,27 @@ DO NOT use conversational filler. If you do not understand the input, just say n
 
   return (
     <div className="transcription-container">
+      {detectedLangNotification && (
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#4caf50',
+          color: 'white',
+          padding: '10px 20px',
+          borderRadius: '24px',
+          zIndex: 1000,
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          fontWeight: 500,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span className="icon">language</span>
+          {detectedLangNotification}
+        </div>
+      )}
       <WelcomeScreen />
     </div>
   );
