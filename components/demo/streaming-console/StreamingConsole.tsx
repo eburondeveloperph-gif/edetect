@@ -25,19 +25,6 @@ export default function StreamingConsole() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isAutoDetect = (autoDetectLanguage && !isLanguageLocked) || language2 === 'Auto-Detect';
-  const prevAutoDetect = useRef(isAutoDetect);
-
-  useEffect(() => {
-    if (prevAutoDetect.current && !isAutoDetect && connected) {
-      // It transitioned from auto-detect to a specific language.
-      // Disconnect and reconnect to apply the new system prompt in a fresh session.
-      disconnect();
-      setTimeout(() => {
-        connect().catch(console.error);
-      }, 1000); // Wait for disconnect to complete and state to settle
-    }
-    prevAutoDetect.current = isAutoDetect;
-  }, [isAutoDetect, connected, disconnect, connect]);
 
   // Set the configuration for the Live API
   useEffect(() => {
@@ -56,9 +43,7 @@ export default function StreamingConsole() {
       },
       inputAudioTranscription: {},
       outputAudioTranscription: {},
-      generationConfig: {
-        temperature: 0.3,
-      },
+      temperature: 0.3,
       systemInstruction: {
         parts: [
           {
@@ -76,13 +61,13 @@ GENERAL INSTRUCTION:
 2. ALL inputs in ${language1} MUST be translated to the secondary language (defaulting to English if not yet determined).
 3. If an input is detected in a language OTHER THAN ${language1} and OTHER THAN the current secondary language, you MUST call set_detected_language with this newly detected language, and then translate the input to ${language1}.
 
-OUTPUT BOTH the original transcription and the translated text.
+OUTPUT BOTH the original transcription (and its language) and the translated text.
 Format your text response exactly like this:
-Original: [Original transcribed text]
+Original ([Detected Language]): [Original transcribed text]
 Translation: [Translated text]
 
-CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the labels "Original" or "Translation". ONLY vocalize the final translated words.
-DO NOT use conversational filler.`
+CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Translation", and DO NOT speak the detected language. ONLY vocalize the final translated words.
+DO NOT use conversational filler. If you do not understand the input, just say nothing.`
               : systemPrompt,
           },
         ],
