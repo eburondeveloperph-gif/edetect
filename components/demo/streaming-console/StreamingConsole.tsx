@@ -29,7 +29,7 @@ export default function StreamingConsole() {
     // Using `any` for config to accommodate `speechConfig`, which is not in the
     // current TS definitions but is used in the working reference example.
     const config: any = {
-      responseModalities: [Modality.AUDIO],
+      responseModalities: [Modality.AUDIO, Modality.TEXT],
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: {
@@ -37,7 +37,9 @@ export default function StreamingConsole() {
           },
         },
       },
-      inputAudioTranscription: {},
+      inputAudioTranscription: {
+        languageCodes: ['nl-BE', 'en-US'],
+      },
       outputAudioTranscription: {},
       temperature: 0.3,
       systemInstruction: {
@@ -70,17 +72,8 @@ export default function StreamingConsole() {
     };
 
     const handleOutputTranscription = (text: string, isFinal: boolean) => {
-      if (!text) return;
-      const turns = useLogStore.getState().turns;
-      const last = turns[turns.length - 1];
-
-      if (last?.role === 'agent' && !last.isFinal) {
-        updateLastTurn({
-          text: last.text + text,
-        });
-      } else {
-        addTurn({ role: 'agent', text, isFinal: false });
-      }
+      // We rely on 'handleContent' to render the formatted transcription and translation.
+      // Output transcriptions only contain the spoken translation and would double-print.
     };
 
     // FIX: The 'content' event provides a single LiveServerContent object.
