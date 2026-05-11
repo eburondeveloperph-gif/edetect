@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import WelcomeScreen from '../welcome-screen/WelcomeScreen';
 // FIX: Import LiveServerContent to correctly type the content handler.
 import { Modality, LiveServerContent } from '@google/genai';
-
+import { DEFAULT_LIVE_API_MODEL } from '../../../lib/constants';
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import {
   useSettings,
@@ -29,7 +29,11 @@ export default function StreamingConsole() {
     // Using `any` for config to accommodate `speechConfig`, which is not in the
     // current TS definitions but is used in the working reference example.
     const config: any = {
-      responseModalities: [Modality.AUDIO, Modality.TEXT],
+      model: DEFAULT_LIVE_API_MODEL,
+      generationConfig: {
+        responseModalities: [Modality.AUDIO, Modality.TEXT],
+        temperature: 0.1, // Lower temperature for more stable translation
+      },
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: {
@@ -37,11 +41,7 @@ export default function StreamingConsole() {
           },
         },
       },
-      inputAudioTranscription: {
-        languageCodes: ['nl-BE', 'en-US'],
-      },
-      outputAudioTranscription: {},
-      temperature: 0.3,
+      inputAudioTranscription: {},
       systemInstruction: {
         parts: [
           {
@@ -49,7 +49,11 @@ export default function StreamingConsole() {
           },
         ],
       },
-      tools: [],
+      realtimeInputConfig: {
+        automaticActivityDetection: {
+          silenceDurationMs: 1500, // Wait longer before responding to avoid cutting off
+        }
+      }
     };
 
     setConfig(config);
@@ -72,21 +76,28 @@ export default function StreamingConsole() {
     };
 
     const handleOutputTranscription = (text: string, isFinal: boolean) => {
-      // We rely on 'handleContent' to render the formatted transcription and translation.
-      // Output transcriptions only contain the spoken translation and would double-print.
+      if (!text) return;
+      const turns = useLogStore.getState().turns;
+      const last = turns[turns.length - 1];
+
+      // We only use output transcription as a fallback or for real-time feel if text modality is slow
+      // But since we have TEXT modality, this might conflict.
+      // However, showing the spoken part specifically can be helpful.
+      console.log('Output Transcription:', text, isFinal);
     };
 
-    // FIX: The 'content' event provides a single LiveServerContent object.
-    // The function signature is updated to accept one argument, and groundingMetadata is extracted from it.
     const handleContent = (serverContent: LiveServerContent) => {
       const text =
         serverContent.modelTurn?.parts
           ?.map((p: any) => p.text)
           .filter(Boolean)
-          .join(' ') ?? '';
+          .join('') ?? ''; // Join with empty string for cleaner streaming
       const groundingChunks = serverContent.groundingMetadata?.groundingChunks;
 
-      if (!text && !groundingChunks) return;
+      if (!text && !groundingChunks) {
+        console.log('No text or grounding chunks in content');
+        return;
+      }
 
       const turns = useLogStore.getState().turns;
       // FIX: Replaced .at(-1) with standard index access to resolve potential compatibility issues.
