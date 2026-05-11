@@ -35,7 +35,7 @@ export default function StreamingConsole() {
     // Using `any` for config to accommodate `speechConfig`, which is not in the
     // current TS definitions but is used in the working reference example.
     const config: any = {
-      responseModalities: [Modality.AUDIO],
+      responseModalities: [Modality.AUDIO, Modality.TEXT],
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: {
@@ -45,7 +45,9 @@ export default function StreamingConsole() {
       },
       inputAudioTranscription: {},
       outputAudioTranscription: {},
-      temperature: 0.3,
+      generationConfig: {
+        temperature: 0.3,
+      },
       systemInstruction: {
         parts: [
           {
