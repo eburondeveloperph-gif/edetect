@@ -66,7 +66,7 @@ Format your text response exactly like this:
 Original ([Detected Language]): [Original transcribed text]
 Translation: [Translated text]
 
-CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Transcription", and DO NOT speak the detected language. ONLY vocalize the final translated text.
+CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Transcription" or "Translation", and DO NOT speak the detected language. ONLY vocalize the final translated text.
 DO NOT use conversational filler. If you do not understand the input, just say nothing.`
               : systemPrompt,
           },
@@ -114,16 +114,10 @@ DO NOT use conversational filler. If you do not understand the input, just say n
     };
 
     const handleOutputTranscription = (text: string, isFinal: boolean) => {
-      const turns = useLogStore.getState().turns;
-      const last = turns[turns.length - 1];
-      if (last && last.role === 'agent' && !last.isFinal) {
-        updateLastTurn({
-          text: last.text + text,
-          isFinal,
-        });
-      } else {
-        addTurn({ role: 'agent', text, isFinal });
-      }
+      // Do nothing for output transcription. We rely on 'content' to render the AI's actual full text response,
+      // which includes the 'Original:' and 'Translation:' blocks.
+      // If we render output audio transcriptions, it will double-print or overwrite the formatted text.
+      // We can console log it for debugging if needed.
     };
 
     // FIX: The 'content' event provides a single LiveServerContent object.
