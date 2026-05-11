@@ -64,11 +64,19 @@ export default function StreamingConsole() {
           {
             text: isAutoDetect 
               ? `You are an expert language translator. The primary language is ${language1}.
-The current secondary language is ${language2 === 'Auto-Detect' ? 'to be determined' : language2}.
+The current secondary language is ${language2 === 'Auto-Detect' ? 'NOT YET DETERMINED' : language2}.
+
+CRITICAL INSTRUCTION FOR THE FIRST INPUT OF THE SESSION:
+If the secondary language is "NOT YET DETERMINED", you MUST accurately detect the language of the speaker's very first input.
+- If the first input is spoken in ${language1}, you MUST call the set_detected_language tool with "English" (or another appropriate language) to set the secondary language.
+- If the first input is spoken in a foreign language (NOT ${language1}), you MUST call the set_detected_language tool with the name of the precisely detected language (e.g., "Spanish", "French").
+
+GENERAL INSTRUCTION:
 If the input is spoken in ${language1}, translate it to the secondary language (defaulting to English if not yet determined).
 If the input is spoken in another language:
 1. If this language is different from the current secondary language, you MUST call set_detected_language with the name of this new language.
 2. Translate the input to ${language1}.
+
 DO NOT use conversational filler. RETURN ONLY THE TRANSLATED TEXT. DO NOT include the original text or any labels in your response.`
               : systemPrompt,
           },
