@@ -122,19 +122,6 @@ export default function Sidebar() {
       <div className="sidebar-content">
         <div className="sidebar-section">
           <fieldset disabled={connected}>
-            <div className="locked-prompt-notice" style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: 'rgba(52, 199, 89, 0.1)', border: '1px solid rgba(52, 199, 89, 0.3)', borderRadius: '8px', fontSize: '0.85rem', color: '#1a4e2a' }}>
-              <span className="icon" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '0.5rem' }}>lock</span>
-              Translation engine is locked to <strong>Flemish Dutch ↔ Auto-Detect</strong>.
-            </div>
-            <label>
-              System Prompt (Locked)
-              <textarea
-                value={systemPrompt}
-                readOnly
-                rows={8}
-                style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed', color: '#666' }}
-              />
-            </label>
             <label>
               Voice
               <select value={voice} onChange={e => setVoice(e.target.value)}>
