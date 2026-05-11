@@ -79,10 +79,10 @@ If the input is spoken in another language:
 
 OUTPUT BOTH the original transcription and the translated text.
 Format your text response exactly like this:
-Original ([Detected Language]): [Original transcribed text]
+Original: [Original transcribed text]
 Translation: [Translated text]
 
-CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Translation", and DO NOT speak the detected language. ONLY vocalize the final translated words.
+CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the labels "Original" or "Translation". ONLY vocalize the final translated words.
 DO NOT use conversational filler.`
               : systemPrompt,
           },

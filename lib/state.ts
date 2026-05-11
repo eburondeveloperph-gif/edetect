@@ -23,11 +23,11 @@ const generateSystemPrompt = (lang1: string, lang2: string, topic: string) => {
 1. Automatically detect the language of the input if not explicitly specified.
 2. If the input is in ${lang1}, translate it into the secondary language.
 3. If the input is in the secondary language, translate it into ${lang1}.
-4. OUTPUT BOTH the original transcription (and its language) and the translated text.
+4. OUTPUT BOTH the original transcription and the translated text.
 5. Format your text response exactly like this:
-   Original ([Detected Language]): [Original transcribed text]
+   Original: [Original transcribed text]
    Translation: [Translated text]
-6. CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Translation", and DO NOT speak the detected language. ONLY vocalize the final translated words.
+6. CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the labels "Original" or "Translation". ONLY vocalize the final translated words.
 7. DO NOT include conversational filler, introductory phrases, reasoning, or explanations.
 
 **STRICT PROHIBITIONS (DO NOT DO THESE):**
