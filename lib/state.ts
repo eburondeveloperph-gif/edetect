@@ -54,11 +54,13 @@ export const useSettings = create<{
   language1: string;
   language2: string;
   autoDetectLanguage: boolean;
+  isLanguageLocked: boolean;
   topic: string;
   setSystemPrompt: (prompt: string) => void;
   setLanguage1: (language: string) => void;
   setLanguage2: (language: string) => void;
   setAutoDetectLanguage: (autoDetect: boolean) => void;
+  setIsLanguageLocked: (locked: boolean) => void;
   setTopic: (topic: string) => void;
 }>((set, get) => ({
   systemPrompt: generateSystemPrompt('Dutch (Flemish)', 'Auto-Detect', ''),
@@ -67,6 +69,7 @@ export const useSettings = create<{
   language1: 'Dutch (Flemish)',
   language2: 'Auto-Detect',
   autoDetectLanguage: false,
+  isLanguageLocked: false,
   topic: '',
   setSystemPrompt: prompt => set({ systemPrompt: prompt }),
   setModel: model => set({ model }),
@@ -80,6 +83,7 @@ export const useSettings = create<{
     systemPrompt: generateSystemPrompt(get().language1, language, get().topic)
   }),
   setAutoDetectLanguage: autoDetect => set({ autoDetectLanguage: autoDetect }),
+  setIsLanguageLocked: locked => set({ isLanguageLocked: locked }),
   setTopic: topic => set({
     topic: topic,
     systemPrompt: generateSystemPrompt(get().language1, get().language2, topic)

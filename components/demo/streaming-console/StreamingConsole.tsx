@@ -18,13 +18,13 @@ import { useHistoryStore } from '../../../lib/history';
 
 export default function StreamingConsole() {
   const { client, setConfig, connected, connect, disconnect } = useLiveAPIContext();
-  const { systemPrompt, voice, language1, language2, autoDetectLanguage } = useSettings();
+  const { systemPrompt, voice, language1, language2, autoDetectLanguage, isLanguageLocked } = useSettings();
   const { addHistoryItem } = useHistoryStore();
 
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const isAutoDetect = autoDetectLanguage || language2 === 'Auto-Detect';
+  const isAutoDetect = (autoDetectLanguage && !isLanguageLocked) || language2 === 'Auto-Detect';
   const prevAutoDetect = useRef(isAutoDetect);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function StreamingConsole() {
 
   // Set the configuration for the Live API
   useEffect(() => {
-    const isAutoDetect = autoDetectLanguage || language2 === 'Auto-Detect';
+    const isAutoDetect = (autoDetectLanguage && !isLanguageLocked) || language2 === 'Auto-Detect';
     
     // Using `any` for config to accommodate `speechConfig`, which is not in the
     // current TS definitions but is used in the working reference example.
@@ -219,6 +219,7 @@ DO NOT use conversational filler.`
               // Delay setting the language to ensure it happens after transcription is rendered
               setTimeout(() => {
                 useSettings.getState().setLanguage2((langInfo as any).languageName);
+                useSettings.getState().setIsLanguageLocked(true);
               }, 500);
               // Do we need to send response back? Yes, otherwise model gets stuck
               client.sendToolResponse({
