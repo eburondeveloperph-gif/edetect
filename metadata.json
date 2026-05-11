@@ -1,0 +1,8 @@
+{
+  "name": "transl",
+  "description": "Real-time dual translation",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
