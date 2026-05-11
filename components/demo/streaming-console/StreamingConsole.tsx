@@ -66,7 +66,7 @@ Format your text response exactly like this:
 Original ([Detected Language]): [Original transcribed text]
 Translation: [Translated text]
 
-CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Translation", and DO NOT speak the detected language. ONLY vocalize the final translated words.
+CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the "Original" transcription, DO NOT speak the labels "Original" or "Transcription", and DO NOT speak the detected language. ONLY vocalize the final translated text.
 DO NOT use conversational filler. If you do not understand the input, just say nothing.`
               : systemPrompt,
           },

@@ -26,7 +26,7 @@ const generateSystemPrompt = (lang1: string, lang2: string, topic: string) => {
 4. Format your text response exactly like this:
    Original ([Detected Language]): [Original transcribed text]
    Translation: [Translated text]
-5. CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the labels "Original" or "Translation". ONLY vocalize the final translated words.
+5. CRITICAL AUDIO INSTRUCTION: When speaking aloud, YOU MUST ONLY SPEAK THE TRANSLATED TEXT. DO NOT speak the labels "Original" or "Transcription". ONLY vocalize the final translated text.
 6. DO NOT include conversational filler, introductory phrases, reasoning, or explanations.
 7. If you do not understand the input, just say nothing.
 
