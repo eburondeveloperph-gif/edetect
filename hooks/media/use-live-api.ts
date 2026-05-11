@@ -36,7 +36,6 @@ export type UseLiveApiResults = {
   connected: boolean;
 
   volume: number;
-  isAiSpeaking: boolean;
   isTtsMuted: boolean;
   toggleTtsMute: () => void;
 };
@@ -50,9 +49,9 @@ export function useLiveApi({
   const client = useMemo(() => new GenAILiveClient(apiKey, model), [apiKey, model]);
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
+  const intentionallyDisconnected = useRef<boolean>(true);
 
   const [volume, setVolume] = useState(0);
-  const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [connected, setConnected] = useState(false);
   const [config, setConfig] = useState<LiveConnectConfig>({});
   const [isTtsMuted, setIsTtsMuted] = useState(false);
@@ -66,6 +65,21 @@ export function useLiveApi({
       return newMuted;
     });
   }, []);
+
+  const connect = useCallback(async () => {
+    if (!config) {
+      throw new Error('config has not been set');
+    }
+    intentionallyDisconnected.current = false;
+    client.disconnect();
+    await client.connect(config);
+  }, [client, config]);
+
+  const disconnect = useCallback(async () => {
+    intentionallyDisconnected.current = true;
+    client.disconnect();
+    setConnected(false);
+  }, [setConnected, client]);
 
   // register audio for streaming server -> speakers
   useEffect(() => {
@@ -93,6 +107,14 @@ export function useLiveApi({
 
     const onClose = () => {
       setConnected(false);
+      // Auto-reconnect if it wasn't an intentional disconnect
+      if (!intentionallyDisconnected.current) {
+        setTimeout(() => {
+          if (!intentionallyDisconnected.current) {
+            connect().catch(console.error);
+          }
+        }, 1000);
+      }
     };
 
     const stopAudioStreamer = () => {
@@ -102,22 +124,15 @@ export function useLiveApi({
     };
 
     const onAudio = (data: ArrayBuffer) => {
-      setIsAiSpeaking(true);
       if (audioStreamerRef.current) {
         audioStreamerRef.current.addPCM16(new Uint8Array(data));
       }
-    };
-
-    const onTurnComplete = () => {
-      setIsAiSpeaking(false);
     };
 
     // Bind event listeners
     client.on('open', onOpen);
     client.on('close', onClose);
     client.on('interrupted', stopAudioStreamer);
-    client.on('interrupted', onTurnComplete);
-    client.on('turncomplete', onTurnComplete);
     client.on('audio', onAudio);
 
     return () => {
@@ -125,24 +140,9 @@ export function useLiveApi({
       client.off('open', onOpen);
       client.off('close', onClose);
       client.off('interrupted', stopAudioStreamer);
-      client.off('interrupted', onTurnComplete);
-      client.off('turncomplete', onTurnComplete);
       client.off('audio', onAudio);
     };
-  }, [client]);
-
-  const connect = useCallback(async () => {
-    if (!config) {
-      throw new Error('config has not been set');
-    }
-    client.disconnect();
-    await client.connect(config);
-  }, [client, config]);
-
-  const disconnect = useCallback(async () => {
-    client.disconnect();
-    setConnected(false);
-  }, [setConnected, client]);
+  }, [client, connect]);
 
   return {
     client,
@@ -152,7 +152,6 @@ export function useLiveApi({
     connected,
     disconnect,
     volume,
-    isAiSpeaking,
     isTtsMuted,
     toggleTtsMute,
   };

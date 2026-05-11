@@ -10,7 +10,7 @@ import { useLogStore, useSettings } from '../../../lib/state';
 
 const WelcomeScreen: React.FC = () => {
   const turns = useLogStore(state => state.turns);
-  const { language1, language2 } = useSettings();
+  const { language2 } = useSettings();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom whenever turns update
@@ -27,6 +27,11 @@ const WelcomeScreen: React.FC = () => {
     return (
       <div className="welcome-screen">
         <div className="welcome-content empty">
+          <h1>Translator</h1>
+          <div className="status-indicator">
+            <span className="dot"></span> Ready to translate
+          </div>
+          <p className="welcome-hint">Start the stream and speak to begin...</p>
         </div>
       </div>
     );
@@ -42,34 +47,13 @@ const WelcomeScreen: React.FC = () => {
           >
             <div className="turn-inner">
               <span className="turn-label">
-                {turn.role === 'user' ? 'Input' : 'Translation'}
+                {turn.role === 'user' ? 'Live Transcription' : `AI Agent`}
               </span>
               <div className="turn-text-wrapper">
-                {turn.role === 'user' ? (
-                  <p className="turn-text">
-                    {turn.text}
-                    {(!turn.isFinal && index === turns.length - 1) && <span className="cursor"></span>}
-                  </p>
-                ) : (
-                  <>
-                    {turn.transcription && (
-                      <p className="turn-transcription">
-                        {turn.transcription}
-                      </p>
-                    )}
-                    {turn.translation ? (
-                      <p className="turn-text">
-                        {turn.translation}
-                        {(!turn.isFinal && index === turns.length - 1) && <span className="cursor"></span>}
-                      </p>
-                    ) : (
-                      <p className="turn-text">
-                        {turn.text}
-                        {(!turn.isFinal && index === turns.length - 1) && <span className="cursor"></span>}
-                      </p>
-                    )}
-                  </>
-                )}
+                <p className="turn-text">
+                  {turn.text}
+                  {(!turn.isFinal && index === turns.length - 1) && <span className="cursor"></span>}
+                </p>
               </div>
             </div>
           </div>

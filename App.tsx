@@ -26,41 +26,22 @@ import StreamingConsole from './components/demo/streaming-console/StreamingConso
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import { LiveAPIProvider } from './contexts/LiveAPIContext';
-import { useAuth, updateUserSettings } from './lib/auth';
-import { useSettings } from './lib/state';
 
-const API_KEY = process.env.API_KEY;
-if (typeof API_KEY !== 'string') {
-  throw new Error(
-    'Missing required environment variable: API_KEY'
-  );
-}
+const API_KEY = process.env.API_KEY || process.env.GEMINI_API_KEY;
 
 /**
  * Main application component that provides a streaming interface for Live API.
  * Manages video streaming state and provides controls for webcam/screen capture.
  */
 function App() {
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-
-    const unsub = useSettings.subscribe((state, prevState) => {
-      const changes: Partial<{ systemPrompt: string; voice: string }> = {};
-      if (state.systemPrompt !== prevState.systemPrompt) {
-        changes.systemPrompt = state.systemPrompt;
-      }
-      if (state.voice !== prevState.voice) {
-        changes.voice = state.voice;
-      }
-      if (Object.keys(changes).length > 0) {
-        updateUserSettings(user.id, changes);
-      }
-    });
-
-    return () => unsub();
-  }, [user]);
+  if (!API_KEY) {
+    return (
+      <div className="error-screen">
+        <h3>Missing configuration</h3>
+        <p>Please set the GEMINI_API_KEY environment variable in the Settings menu to start using the translator.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="App">

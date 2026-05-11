@@ -153,11 +153,7 @@ export class GenAILiveClient {
       this.emitter.emit('error', new ErrorEvent('Client is not connected'));
       return;
     }
-    const partsArray = Array.isArray(parts) ? parts : [parts];
-    this.session.sendClientContent({ 
-      turns: [{ role: 'user', parts: partsArray }], 
-      turnComplete 
-    });
+    this.session.sendClientContent({ turns: parts, turnComplete });
     this.log(`client.send`, parts);
   }
 

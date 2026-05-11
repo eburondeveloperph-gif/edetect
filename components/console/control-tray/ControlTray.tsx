@@ -24,8 +24,7 @@ import cn from 'classnames';
 import React, { memo, ReactNode, useEffect, useRef, useState } from 'react';
 import { AudioRecorder } from '../../../lib/audio-recorder';
 import { useLogStore } from '../../../lib/state';
-import { useAuth, clearUserConversations } from '../../../lib/auth';
-import { useVAD } from '../../../hooks/use-vad';
+
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import MicVisualizer from '../../MicVisualizer';
 
@@ -37,9 +36,7 @@ function ControlTray({ children }: ControlTrayProps) {
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
   const [micVolume, setMicVolume] = useState(0);
-  const isSpeaking = useVAD(audioRecorder);
   const connectButtonRef = useRef<HTMLButtonElement>(null);
-  const { session, user } = useAuth();
 
   const {
     client,
@@ -48,17 +45,8 @@ function ControlTray({ children }: ControlTrayProps) {
     disconnect,
     isTtsMuted,
     toggleTtsMute,
-    isAiSpeaking,
   } = useLiveAPIContext();
 
-  useEffect(() => {
-    if (audioRecorder.stream) {
-      audioRecorder.stream.getTracks().forEach(track => {
-        track.enabled = !isAiSpeaking && !muted;
-      });
-    }
-  }, [isAiSpeaking, muted, audioRecorder.stream]);
-  
   useEffect(() => {
     if (!connected && connectButtonRef.current) {
       connectButtonRef.current.focus();
@@ -99,7 +87,6 @@ function ControlTray({ children }: ControlTrayProps) {
   }, [connected, client, muted, audioRecorder]);
 
   const handleMicClick = () => {
-    if (!session) return;
     if (connected) {
       setMuted(!muted);
     } else {
@@ -108,7 +95,6 @@ function ControlTray({ children }: ControlTrayProps) {
   };
 
   const connectButtonAction = () => {
-    if (!session) return;
     if (connected) {
       disconnect();
     } else {
@@ -118,24 +104,17 @@ function ControlTray({ children }: ControlTrayProps) {
 
   const handleReset = () => {
     useLogStore.getState().clearTurns();
-    if (user) {
-      clearUserConversations(user.id);
-    }
   };
 
-  const micButtonTitle = session
-    ? connected
-      ? muted
-        ? 'Unmute microphone'
-        : 'Mute microphone'
-      : 'Connect and start microphone'
-    : 'Please sign in to use the translator';
+  const micButtonTitle = connected
+    ? muted
+      ? 'Unmute microphone'
+      : 'Mute microphone'
+    : 'Connect and start microphone';
 
-  const connectButtonTitle = session
-    ? connected
-      ? 'Stop streaming'
-      : 'Start streaming'
-    : 'Please sign in to use the translator';
+  const connectButtonTitle = connected
+    ? 'Stop streaming'
+    : 'Start streaming';
 
   const isMicActive = connected && !muted;
 
@@ -148,7 +127,6 @@ function ControlTray({ children }: ControlTrayProps) {
             className={cn('action-button mic-button', { active: isMicActive })}
             onClick={handleMicClick}
             title={micButtonTitle}
-            disabled={!session}
             style={{ '--mic-volume': micVolume } as React.CSSProperties}
           >
             {!muted ? (
@@ -183,7 +161,6 @@ function ControlTray({ children }: ControlTrayProps) {
               className={cn('action-button connect-toggle', { connected })}
               onClick={connectButtonAction}
               title={connectButtonTitle}
-              disabled={!session}
             >
               <span className="material-symbols-outlined filled">
                 {connected ? 'pause' : 'play_arrow'}
