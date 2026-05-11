@@ -35,19 +35,19 @@ export default function StreamingConsole() {
     // Using `any` for config to accommodate `speechConfig`, which is not in the
     // current TS definitions but is used in the working reference example.
     const config: any = {
-      responseModalities: [Modality.AUDIO, Modality.TEXT],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: {
-            voiceName: voice,
+      generationConfig: {
+        responseModalities: ['AUDIO', 'TEXT'],
+        temperature: 0.3,
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: voice,
+            },
           },
         },
       },
-      inputAudioTranscription: {},
+      inputAudioTranscription: { model: 'models/gemini-2.0-flash' },
       outputAudioTranscription: {},
-      generationConfig: {
-        temperature: 0.3,
-      },
       systemInstruction: {
         parts: [
           {
