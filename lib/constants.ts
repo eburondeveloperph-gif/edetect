@@ -22,9 +22,9 @@
  * Default Live API model to use
  */
 export const DEFAULT_LIVE_API_MODEL =
-  'gemini-2.0-flash-exp';
+  'models/gemini-3.1-flash-live-preview';
 
-export const DEFAULT_VOICE = 'Charon';
+export const DEFAULT_VOICE = 'Orus';
 
 export const AVAILABLE_VOICES: { name: string; value: string }[] = [
   { name: 'Gold', value: 'Zephyr' },

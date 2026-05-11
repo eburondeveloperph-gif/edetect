@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import WelcomeScreen from '../welcome-screen/WelcomeScreen';
 // FIX: Import LiveServerContent to correctly type the content handler.
-import { Modality, LiveServerContent } from '@google/genai';
+import { Modality, LiveServerContent, MediaResolution } from '@google/genai';
 import { DEFAULT_LIVE_API_MODEL } from '../../../lib/constants';
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import {
@@ -30,10 +30,9 @@ export default function StreamingConsole() {
     // current TS definitions but is used in the working reference example.
     const config: any = {
       model: DEFAULT_LIVE_API_MODEL,
-      generationConfig: {
-        responseModalities: [Modality.AUDIO, Modality.TEXT],
-        temperature: 0.1, // Lower temperature for more stable translation
-      },
+      responseModalities: [Modality.AUDIO, Modality.TEXT],
+      mediaResolution: MediaResolution.MEDIA_RESOLUTION_MEDIUM,
+      temperature: 0.1, // Lower temperature for more stable translation
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: {
@@ -41,7 +40,6 @@ export default function StreamingConsole() {
           },
         },
       },
-      inputAudioTranscription: {},
       systemInstruction: {
         parts: [
           {
@@ -53,7 +51,8 @@ export default function StreamingConsole() {
         automaticActivityDetection: {
           silenceDurationMs: 1500, // Wait longer before responding to avoid cutting off
         }
-      }
+      },
+      inputAudioTranscription: {},
     };
 
     setConfig(config);
@@ -87,17 +86,13 @@ export default function StreamingConsole() {
     };
 
     const handleContent = (serverContent: LiveServerContent) => {
-      const text =
-        serverContent.modelTurn?.parts
-          ?.map((p: any) => p.text)
-          .filter(Boolean)
-          .join('') ?? ''; // Join with empty string for cleaner streaming
+      const parts = serverContent.modelTurn?.parts;
+      if (!parts) return;
+
+      const text = parts.map((p: any) => p.text).filter(Boolean).join('');
       const groundingChunks = serverContent.groundingMetadata?.groundingChunks;
 
-      if (!text && !groundingChunks) {
-        console.log('No text or grounding chunks in content');
-        return;
-      }
+      if (!text && !groundingChunks) return;
 
       const turns = useLogStore.getState().turns;
       // FIX: Replaced .at(-1) with standard index access to resolve potential compatibility issues.
