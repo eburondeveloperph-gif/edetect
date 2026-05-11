@@ -216,7 +216,10 @@ DO NOT use conversational filler.`
           if (call.name === 'set_detected_language') {
             const langInfo = call.args;
             if (langInfo && (langInfo as any).languageName) {
-              useSettings.getState().setLanguage2((langInfo as any).languageName);
+              // Delay setting the language to ensure it happens after transcription is rendered
+              setTimeout(() => {
+                useSettings.getState().setLanguage2((langInfo as any).languageName);
+              }, 500);
               // Do we need to send response back? Yes, otherwise model gets stuck
               client.sendToolResponse({
                 functionResponses: [
